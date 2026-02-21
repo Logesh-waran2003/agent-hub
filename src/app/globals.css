@@ -1,14 +1,42 @@
 @import "tailwindcss";
 
+:root {
+  --hub-bg: #0a0a0b;
+  --hub-bg-raised: #111113;
+  --hub-bg-surface: #09090b;
+  --hub-border: #27272a;
+  --hub-text: #e4e4e7;
+  --hub-text-muted: #71717a;
+  --hub-text-faint: #52525b;
+  --hub-accent: #f59e0b;
+  --hub-selection: rgba(245, 158, 11, 0.2);
+  --hub-scrollbar: #27272a;
+}
+
+html.light {
+  --hub-bg: #f4f4f5;
+  --hub-bg-raised: #e4e4e7;
+  --hub-bg-surface: #fafafa;
+  --hub-border: #d4d4d8;
+  --hub-text: #18181b;
+  --hub-text-muted: #52525b;
+  --hub-text-faint: #a1a1aa;
+  --hub-accent: #d97706;
+  --hub-selection: rgba(217, 119, 6, 0.2);
+  --hub-scrollbar: #a1a1aa;
+}
+
 * {
   scrollbar-width: thin;
-  scrollbar-color: #27272a transparent;
+  scrollbar-color: var(--hub-scrollbar) transparent;
 }
 
 ::selection {
-  background: rgba(245, 158, 11, 0.2);
+  background: var(--hub-selection);
 }
 
 body {
   overflow: hidden;
+  background: var(--hub-bg);
+  color: var(--hub-text);
 }

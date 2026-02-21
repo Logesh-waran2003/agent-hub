@@ -29,28 +29,28 @@ export function TabBar() {
   }
 
   return (
-    <div className="flex items-center h-7 bg-[#111113] border-b border-zinc-800 overflow-x-auto">
+    <div className="flex items-center h-7 bg-(--hub-bg-raised) border-b border-(--hub-border) overflow-x-auto">
       {tabs.map((tab) => (
         <button
           key={tab.id}
           onClick={() => setActiveTab(tab.id)}
-          className={`group flex items-center gap-1.5 h-full px-3 text-[11px] border-r border-zinc-800 shrink-0 transition-colors ${
+          className={`group flex items-center gap-1.5 h-full px-3 text-[11px] border-r border-(--hub-border) shrink-0 transition-colors ${
             tab.id === activeTabId
-              ? "bg-[#18181b] text-zinc-200 border-t-2 border-t-amber-500"
-              : "text-zinc-500 hover:text-zinc-300 hover:bg-[#141416] border-t-2 border-t-transparent"
+              ? "bg-(--hub-bg) text-(--hub-text) border-t-2 border-t-amber-500"
+              : "text-(--hub-text-muted) hover:text-(--hub-text) hover:bg-(--hub-bg) border-t-2 border-t-transparent"
           }`}
         >
           {tab.name}
           <span
             onClick={(e) => closeTab(tab.id, e)}
-            className="text-zinc-600 hover:text-red-400 opacity-0 group-hover:opacity-100 ml-1"
+            className="text-(--hub-text-faint) hover:text-red-400 opacity-0 group-hover:opacity-100 ml-1"
           >×</span>
         </button>
       ))}
       {creating ? (
         <input
           ref={inputRef}
-          className="h-full w-28 px-2 bg-[#0a0a0b] border-r border-zinc-800 text-[11px] text-zinc-200 font-mono outline-none focus:border-b-amber-500"
+          className="h-full w-28 px-2 bg-(--hub-bg) border-r border-(--hub-border) text-[11px] text-(--hub-text) font-mono outline-none"
           placeholder="tab name…"
           onKeyDown={(e) => {
             if (e.key === "Enter") submitTab(e.currentTarget.value);
@@ -61,7 +61,7 @@ export function TabBar() {
       ) : (
         <button
           onClick={() => setCreating(true)}
-          className="h-full px-2.5 text-zinc-600 hover:text-zinc-300 text-[11px]"
+          className="h-full px-2.5 text-(--hub-text-faint) hover:text-(--hub-text) text-[11px]"
           title="New tab"
         >+</button>
       )}

@@ -15,10 +15,24 @@ export function useTerminal(sessionId: string, containerRef: React.RefObject<HTM
     const { FitAddon } = await import("@xterm/addon-fit");
     await import("@xterm/xterm/css/xterm.css");
 
+    const isLight = document.documentElement.classList.contains("light");
     const term = new Terminal({
       fontSize: 13,
       fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace",
-      theme: {
+      theme: isLight ? {
+        background: "#fafafa",
+        foreground: "#18181b",
+        cursor: "#d97706",
+        selectionBackground: "rgba(217, 119, 6, 0.15)",
+        black: "#18181b",
+        red: "#dc2626",
+        green: "#16a34a",
+        yellow: "#d97706",
+        blue: "#2563eb",
+        magenta: "#9333ea",
+        cyan: "#0891b2",
+        white: "#fafafa",
+      } : {
         background: "#09090b",
         foreground: "#e4e4e7",
         cursor: "#f59e0b",

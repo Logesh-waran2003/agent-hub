@@ -11,7 +11,7 @@ export function PanelContainer() {
 
   if (!activeTabId) {
     return (
-      <div className="flex-1 flex items-center justify-center text-zinc-600 text-sm">
+      <div className="flex-1 flex items-center justify-center text-(--hub-text-faint) text-sm">
         Create a tab to get started
       </div>
     );
@@ -19,8 +19,8 @@ export function PanelContainer() {
 
   if (sessions.length === 0) {
     return (
-      <div className="flex-1 flex items-center justify-center text-zinc-600 text-xs font-mono">
-        No sessions in this tab. Press <kbd className="mx-1 px-1.5 py-0.5 bg-zinc-800 border border-zinc-700 rounded text-[10px]">N</kbd> to create one.
+      <div className="flex-1 flex items-center justify-center text-(--hub-text-faint) text-xs font-mono">
+        No sessions in this tab. Press <kbd className="mx-1 px-1.5 py-0.5 bg-(--hub-bg-raised) border border-(--hub-border) rounded text-[10px]">N</kbd> to create one.
       </div>
     );
   }

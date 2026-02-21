@@ -19,23 +19,23 @@ export function TerminalPane({ sessionId }: { sessionId: string }) {
   if (!session) return null;
 
   return (
-    <div className="flex flex-col h-full bg-[#09090b] border border-zinc-800 rounded-sm overflow-hidden">
+    <div className="flex flex-col h-full bg-(--hub-bg-surface) border border-(--hub-border) rounded-sm overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between h-6 px-2 bg-[#111113] border-b border-zinc-800 shrink-0">
+      <div className="flex items-center justify-between h-6 px-2 bg-(--hub-bg-raised) border-b border-(--hub-border) shrink-0">
         <div className="flex items-center gap-1.5">
           <span className={`w-1.5 h-1.5 rounded-full ${STATUS_COLORS[session.status]}`} />
-          <span className="text-[11px] font-mono text-amber-500">@{session.name}</span>
-          <span className="text-[10px] text-zinc-600 truncate max-w-32">{session.command}</span>
+          <span className="text-[11px] font-mono text-(--hub-accent)">@{session.name}</span>
+          <span className="text-[10px] text-(--hub-text-faint) truncate max-w-32">{session.command}</span>
         </div>
         <div className="flex items-center gap-1">
           <button
             onClick={() => { getSocket().emit("session:restart", { sessionId }); }}
-            className="text-[10px] text-zinc-500 hover:text-zinc-300 px-1"
+            className="text-[10px] text-(--hub-text-muted) hover:text-(--hub-text) px-1"
             title="Restart"
           >↻</button>
           <button
             onClick={() => { getSocket().emit("session:destroy", { sessionId }); }}
-            className="text-[10px] text-zinc-500 hover:text-red-400 px-1"
+            className="text-[10px] text-(--hub-text-muted) hover:text-red-400 px-1"
             title="Close"
           >×</button>
         </div>
