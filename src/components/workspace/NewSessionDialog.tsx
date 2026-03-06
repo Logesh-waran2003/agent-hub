@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "motion/react";
 import { getSocket } from "@/hooks/useSocket";
 import { useWorkspace } from "@/stores/workspace-store";
+import { Terminal, Zap, X } from "lucide-react";
 
 export function NewSessionDialog({ onClose }: { onClose: () => void }) {
   const tabs = useWorkspace((s) => s.tabs);
@@ -20,61 +22,145 @@ export function NewSessionDialog({ onClose }: { onClose: () => void }) {
   }
 
   const presets = [
-    { label: "Bash", cmd: "bash", t: "shell" as const },
-    { label: "Kiro CLI", cmd: "kiro-cli chat --resume", t: "kiro" as const },
-    { label: "Zsh", cmd: "zsh", t: "shell" as const },
+    { label: "Bash", cmd: "bash", t: "shell" as const, icon: Terminal },
+    { label: "Kiro CLI", cmd: "kiro-cli chat --resume", t: "kiro" as const, icon: Zap },
+    { label: "Zsh", cmd: "zsh", t: "shell" as const, icon: Terminal },
   ];
 
-  const inputCls = "mt-0.5 w-full bg-(--hub-bg) border border-(--hub-border) rounded px-2 py-1.5 text-xs text-(--hub-text) font-mono focus:border-amber-600 focus:outline-none";
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60" onClick={onClose}>
-      <form
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.12 }}
+      className="fixed inset-0 z-50 flex items-center justify-center"
+      style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)" }}
+      onClick={onClose}
+    >
+      <motion.form
+        initial={{ opacity: 0, scale: 0.96, y: 8 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.96, y: 8 }}
+        transition={{ duration: 0.15 }}
         onClick={(e) => e.stopPropagation()}
         onSubmit={handleSubmit}
-        className="w-[420px] bg-(--hub-bg-raised) border border-(--hub-border) rounded-md p-4 space-y-3"
+        className="w-[440px] rounded-lg p-5 space-y-4"
+        style={{
+          background: "var(--hub-bg-raised)",
+          border: "1px solid var(--hub-border-strong)",
+          boxShadow: "var(--hub-shadow-lg)",
+        }}
       >
-        <h2 className="text-sm font-medium text-(--hub-text)">New Session</h2>
-
-        <div className="flex gap-1.5">
-          {presets.map((p) => (
-            <button
-              key={p.label}
-              type="button"
-              onClick={() => { setCommand(p.cmd); setType(p.t); if (!name) setName(p.label.toLowerCase().replace(/\s+/g, "-")); }}
-              className={`text-[11px] px-2 py-1 rounded border ${command === p.cmd ? "border-amber-600 text-amber-400 bg-amber-950/30" : "border-(--hub-border) text-(--hub-text-muted) hover:border-(--hub-text-faint)"}`}
-            >
-              {p.label}
-            </button>
-          ))}
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-semibold" style={{ color: "var(--hub-text)", fontFamily: "'IBM Plex Sans', sans-serif" }}>
+            New Session
+          </h2>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-1 rounded hub-transition"
+            style={{ color: "var(--hub-text-faint)" }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = "var(--hub-text)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = "var(--hub-text-faint)"; }}
+          >
+            <X size={14} />
+          </button>
         </div>
 
-        <div className="space-y-2">
+        {/* Presets */}
+        <div className="flex gap-2">
+          {presets.map((p) => {
+            const active = command === p.cmd;
+            return (
+              <button
+                key={p.label}
+                type="button"
+                onClick={() => { setCommand(p.cmd); setType(p.t); if (!name) setName(p.label.toLowerCase().replace(/\s+/g, "-")); }}
+                className="flex items-center gap-1.5 text-[11px] px-3 py-1.5 rounded hub-transition"
+                style={{
+                  background: active ? "var(--hub-accent-dim)" : "transparent",
+                  color: active ? "var(--hub-accent)" : "var(--hub-text-muted)",
+                  border: `1px solid ${active ? "var(--hub-accent)" : "var(--hub-border)"}`,
+                  boxShadow: active ? "0 0 12px var(--hub-accent-glow)" : "none",
+                }}
+              >
+                <p.icon size={12} />
+                {p.label}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="space-y-3">
+          {[
+            { label: "Name", sublabel: "used as @mention handle", value: name, onChange: setName, placeholder: "my-terminal", autoFocus: true },
+            { label: "Command", value: command, onChange: setCommand },
+            { label: "Working Directory", value: cwd, onChange: setCwd },
+          ].map((field) => (
+            <label key={field.label} className="block">
+              <span className="text-[11px] font-medium" style={{ color: "var(--hub-text-muted)" }}>
+                {field.label}
+                {field.sublabel && <span className="font-normal ml-1" style={{ color: "var(--hub-text-faint)" }}>({field.sublabel})</span>}
+              </span>
+              <input
+                value={field.value}
+                onChange={(e) => field.onChange(e.target.value)}
+                placeholder={field.placeholder}
+                autoFocus={field.autoFocus}
+                className="mt-1 w-full rounded px-3 py-2 text-xs outline-none hub-transition"
+                style={{
+                  background: "var(--hub-bg)",
+                  color: "var(--hub-text)",
+                  border: "1px solid var(--hub-border)",
+                  fontFamily: "'IBM Plex Mono', monospace",
+                }}
+                onFocus={(e) => { e.currentTarget.style.borderColor = "var(--hub-accent)"; e.currentTarget.style.boxShadow = "0 0 0 2px var(--hub-accent-dim)"; }}
+                onBlur={(e) => { e.currentTarget.style.borderColor = "var(--hub-border)"; e.currentTarget.style.boxShadow = "none"; }}
+              />
+            </label>
+          ))}
+
           <label className="block">
-            <span className="text-[11px] text-(--hub-text-muted)">Name (used as @mention handle)</span>
-            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="my-terminal" className={inputCls} autoFocus />
-          </label>
-          <label className="block">
-            <span className="text-[11px] text-(--hub-text-muted)">Command</span>
-            <input value={command} onChange={(e) => setCommand(e.target.value)} className={inputCls} />
-          </label>
-          <label className="block">
-            <span className="text-[11px] text-(--hub-text-muted)">Working Directory</span>
-            <input value={cwd} onChange={(e) => setCwd(e.target.value)} className={inputCls} />
-          </label>
-          <label className="block">
-            <span className="text-[11px] text-(--hub-text-muted)">Tab</span>
-            <select value={tabId} onChange={(e) => setTabId(e.target.value)} className={inputCls}>
+            <span className="text-[11px] font-medium" style={{ color: "var(--hub-text-muted)" }}>Tab</span>
+            <select
+              value={tabId}
+              onChange={(e) => setTabId(e.target.value)}
+              className="mt-1 w-full rounded px-3 py-2 text-xs outline-none hub-transition"
+              style={{
+                background: "var(--hub-bg)",
+                color: "var(--hub-text)",
+                border: "1px solid var(--hub-border)",
+              }}
+            >
               {tabs.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
             </select>
           </label>
         </div>
 
         <div className="flex justify-end gap-2 pt-1">
-          <button type="button" onClick={onClose} className="text-[11px] px-3 py-1.5 text-(--hub-text-muted) hover:text-(--hub-text)">Cancel</button>
-          <button type="submit" disabled={!name.trim() || !tabId} className="text-[11px] px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-black font-medium rounded disabled:opacity-40">Create</button>
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-[11px] px-4 py-2 rounded hub-transition"
+            style={{ color: "var(--hub-text-muted)" }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "var(--hub-border)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={!name.trim() || !tabId}
+            className="text-[11px] px-4 py-2 rounded font-medium hub-transition disabled:opacity-30"
+            style={{
+              background: "var(--hub-accent)",
+              color: "#000",
+            }}
+          >
+            Create Session
+          </button>
         </div>
-      </form>
-    </div>
+      </motion.form>
+    </motion.div>
   );
 }

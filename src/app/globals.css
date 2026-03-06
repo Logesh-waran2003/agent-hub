@@ -1,31 +1,63 @@
 @import "tailwindcss";
 
+/* === PRECISION INSTRUMENT THEME === */
+
+@theme {
+  --color-surface: var(--hub-bg);
+  --color-surface-raised: var(--hub-bg-raised);
+  --color-surface-overlay: var(--hub-bg-surface);
+  --color-border: var(--hub-border);
+  --color-text-primary: var(--hub-text);
+  --color-text-secondary: var(--hub-text-muted);
+  --color-text-tertiary: var(--hub-text-faint);
+  --color-accent: var(--hub-accent);
+  --color-accent-dim: var(--hub-accent-dim);
+  --color-accent-glow: var(--hub-accent-glow);
+}
+
+/* --- Dark Mode (default) --- */
 :root {
-  --hub-bg: #0a0a0b;
-  --hub-bg-raised: #111113;
-  --hub-bg-surface: #09090b;
-  --hub-border: #27272a;
-  --hub-text: #e4e4e7;
+  --hub-bg: #0c0c0e;
+  --hub-bg-raised: #1a1a1e;
+  --hub-bg-surface: #0a0a0c;
+  --hub-border: rgba(255, 255, 255, 0.15);
+  --hub-border-strong: rgba(255, 255, 255, 0.25);
+  --hub-text: #d4d4d8;
   --hub-text-muted: #71717a;
-  --hub-text-faint: #52525b;
-  --hub-accent: #f59e0b;
-  --hub-selection: rgba(245, 158, 11, 0.2);
+  --hub-text-faint: #3f3f46;
+  --hub-accent: #e8a230;
+  --hub-accent-dim: rgba(232, 162, 48, 0.12);
+  --hub-accent-glow: rgba(232, 162, 48, 0.06);
+  --hub-selection: rgba(232, 162, 48, 0.18);
   --hub-scrollbar: #27272a;
+  --hub-noise-opacity: 0.03;
+  --hub-shadow: 0 1px 3px rgba(0,0,0,0.5), 0 4px 12px rgba(0,0,0,0.3);
+  --hub-shadow-lg: 0 4px 24px rgba(0,0,0,0.6), 0 12px 48px rgba(0,0,0,0.4);
+  --hub-inset-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
 }
 
+/* --- Light Mode --- */
 html.light {
-  --hub-bg: #f4f4f5;
-  --hub-bg-raised: #e4e4e7;
-  --hub-bg-surface: #fafafa;
-  --hub-border: #d4d4d8;
-  --hub-text: #18181b;
-  --hub-text-muted: #52525b;
-  --hub-text-faint: #a1a1aa;
-  --hub-accent: #d97706;
-  --hub-selection: rgba(217, 119, 6, 0.2);
-  --hub-scrollbar: #a1a1aa;
+  --hub-bg: #f0ece4;
+  --hub-bg-raised: #e6e1d8;
+  --hub-bg-surface: #f7f4ee;
+  --hub-border: rgba(0, 0, 0, 0.12);
+  --hub-border-strong: rgba(0, 0, 0, 0.2);
+  --hub-text: #1c1917;
+  --hub-text-muted: #57534e;
+  --hub-text-faint: #a8a29e;
+  --hub-accent: #b45309;
+  --hub-accent-dim: rgba(180, 83, 9, 0.1);
+  --hub-accent-glow: rgba(180, 83, 9, 0.05);
+  --hub-selection: rgba(180, 83, 9, 0.15);
+  --hub-scrollbar: #d6d3d1;
+  --hub-noise-opacity: 0.02;
+  --hub-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
+  --hub-shadow-lg: 0 4px 24px rgba(0,0,0,0.12), 0 12px 48px rgba(0,0,0,0.06);
+  --hub-inset-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
 }
 
+/* === BASE === */
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--hub-scrollbar) transparent;
@@ -39,4 +71,47 @@ body {
   overflow: hidden;
   background: var(--hub-bg);
   color: var(--hub-text);
+  font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
+}
+
+/* === NOISE TEXTURE OVERLAY === */
+.hub-noise::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: var(--hub-noise-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 128px 128px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* === GLOW EFFECTS === */
+.hub-glow-accent {
+  box-shadow: 0 0 0 1px var(--hub-border), 0 0 12px var(--hub-accent-glow);
+}
+
+.hub-glow-active {
+  box-shadow: 0 0 0 1px var(--hub-accent), 0 0 20px var(--hub-accent-dim);
+}
+
+/* === REFINED SCROLLBAR === */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--hub-scrollbar);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--hub-text-faint);
+}
+
+/* === TRANSITIONS === */
+.hub-transition {
+  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }

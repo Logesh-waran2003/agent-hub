@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Agents Hub
+
+A web-based workspace for running and coordinating multiple AI coding agents (Claude Code, kiro-cli, or any CLI tool) in parallel — with live terminal streaming, cross-agent context injection, and a real-time Kanban board.
+
+---
+
+## Why
+
+When you're running 3+ AI agents in parallel, the problems are:
+- Switching between terminal windows to check progress
+- Copy-pasting output from one agent into another's context
+- No visibility into what each agent is doing at a glance
+
+Hub solves all three.
+
+---
+
+## Key Features
+
+### `@mention` Context Bridge
+Type `@agent-name` in any session's input — Hub automatically injects that agent's last terminal output as context before sending. No copy-paste, no window switching.
+
+```
+You: @researcher summarize what you found and write the tests
+```
+
+Hub intercepts the message, appends the last output of `@researcher`'s terminal, and sends the enriched prompt to the current agent.
+
+### Live Terminal Streaming
+Real PTY sessions (via `node-pty`) streamed to the browser over WebSockets. Full xterm.js rendering with resize support. Not a tmux wrapper — actual terminal emulation in the browser.
+
+### Real-time Kanban Board
+Agents write a `PROGRESS.json` file as they work. Hub watches it and updates the board live — no refresh needed. See which tasks are done, in progress, and upcoming across all agents.
+
+### Tabs + Sessions
+Organize agents into tabs. Each tab can have multiple terminal panes in a resizable grid. Sessions persist across page reloads (SQLite-backed). Auto-restart on crash.
+
+### Task Queue
+Create tasks, assign them to sessions, track status — separate from the agent-driven Kanban.
+
+---
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+git clone https://github.com/Logesh-waran2003/hub
+cd hub
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Keyboard shortcuts:**
+- `N` — new session
+- `K` — toggle Kanban board
+- `T` — toggle light/dark theme
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## Kanban Board (PROGRESS.json)
 
-To learn more about Next.js, take a look at the following resources:
+Tell your agents to write progress to a JSON file and Hub will display it live.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Set the path via env:
+```bash
+PROGRESS_FILES=/path/to/project/PROGRESS.json npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Multiple files (comma-separated):
+```bash
+PROGRESS_FILES=/project-a/PROGRESS.json,/project-b/PROGRESS.json npm run dev
+```
 
-## Deploy on Vercel
+Required shape:
+```json
+{
+  "phase": "Phase 2 — Backend",
+  "current_task": "Implementing auth middleware",
+  "status": "active",
+  "updated_at": "2026-03-07T12:00:00Z",
+  "columns": {
+    "done": [{ "id": "1", "title": "Database schema" }],
+    "in_progress": [{ "id": "2", "title": "Auth middleware", "subtasks": [
+      { "id": "2a", "title": "JWT validation", "status": "done" },
+      { "id": "2b", "title": "Session store", "status": "in_progress" }
+    ]}],
+    "todo": [{ "id": "3", "title": "API endpoints" }]
+  }
+}
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Stack
+
+- **Frontend**: Next.js 16, xterm.js, socket.io-client, Zustand, Tailwind v4, Framer Motion
+- **Backend**: Express + socket.io, node-pty, better-sqlite3
+- **Runtime**: Node.js 20+
+
+---
+
+## License
+
+MIT

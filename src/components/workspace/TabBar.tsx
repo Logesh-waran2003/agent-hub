@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useWorkspace } from "@/stores/workspace-store";
 import { getSocket } from "@/hooks/useSocket";
+import { Plus, X } from "lucide-react";
 
 export function TabBar() {
   const tabs = useWorkspace((s) => s.tabs);
@@ -29,28 +30,59 @@ export function TabBar() {
   }
 
   return (
-    <div className="flex items-center h-7 bg-(--hub-bg-raised) border-b border-(--hub-border) overflow-x-auto">
-      {tabs.map((tab) => (
-        <button
-          key={tab.id}
-          onClick={() => setActiveTab(tab.id)}
-          className={`group flex items-center gap-1.5 h-full px-3 text-[11px] border-r border-(--hub-border) shrink-0 transition-colors ${
-            tab.id === activeTabId
-              ? "bg-(--hub-bg) text-(--hub-text) border-t-2 border-t-amber-500"
-              : "text-(--hub-text-muted) hover:text-(--hub-text) hover:bg-(--hub-bg) border-t-2 border-t-transparent"
-          }`}
-        >
-          {tab.name}
-          <span
-            onClick={(e) => closeTab(tab.id, e)}
-            className="text-(--hub-text-faint) hover:text-red-400 opacity-0 group-hover:opacity-100 ml-1"
-          >×</span>
-        </button>
-      ))}
+    <div
+      className="flex items-center h-9 overflow-x-auto shrink-0"
+      style={{
+        background: "var(--hub-bg-raised)",
+        borderBottom: "1px solid var(--hub-border)",
+      }}
+    >
+      {tabs.map((tab) => {
+        const isActive = tab.id === activeTabId;
+        return (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className="group relative flex items-center gap-2 h-full px-4 text-[11px] font-medium shrink-0 hub-transition"
+            style={{
+              color: isActive ? "var(--hub-accent)" : "var(--hub-text-muted)",
+              background: isActive ? "var(--hub-bg)" : "transparent",
+              borderRight: "1px solid var(--hub-border)",
+            }}
+            onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = "var(--hub-accent-glow)"; }}
+            onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = "transparent"; }}
+          >
+            {/* Active indicator line */}
+            {isActive && (
+              <span
+                className="absolute bottom-0 left-2 right-2 h-[2px] rounded-full"
+                style={{ background: "var(--hub-accent)" }}
+              />
+            )}
+            <span style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>{tab.name}</span>
+            <span
+              onClick={(e) => closeTab(tab.id, e)}
+              className="opacity-0 group-hover:opacity-100 hub-transition rounded p-0.5"
+              style={{ color: "var(--hub-text-faint)" }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = "#ef4444"; e.currentTarget.style.background = "rgba(239,68,68,0.1)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = "var(--hub-text-faint)"; e.currentTarget.style.background = "transparent"; }}
+            >
+              <X size={11} />
+            </span>
+          </button>
+        );
+      })}
+
       {creating ? (
         <input
           ref={inputRef}
-          className="h-full w-28 px-2 bg-(--hub-bg) border-r border-(--hub-border) text-[11px] text-(--hub-text) font-mono outline-none"
+          className="h-full w-32 px-3 text-[11px] outline-none"
+          style={{
+            background: "var(--hub-bg)",
+            color: "var(--hub-text)",
+            borderRight: "1px solid var(--hub-border)",
+            fontFamily: "'IBM Plex Mono', monospace",
+          }}
           placeholder="tab name…"
           onKeyDown={(e) => {
             if (e.key === "Enter") submitTab(e.currentTarget.value);
@@ -61,9 +93,14 @@ export function TabBar() {
       ) : (
         <button
           onClick={() => setCreating(true)}
-          className="h-full px-2.5 text-(--hub-text-faint) hover:text-(--hub-text) text-[11px]"
+          className="h-full px-3 hub-transition flex items-center"
+          style={{ color: "var(--hub-text-faint)" }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = "var(--hub-accent)"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = "var(--hub-text-faint)"; }}
           title="New tab"
-        >+</button>
+        >
+          <Plus size={13} />
+        </button>
       )}
     </div>
   );

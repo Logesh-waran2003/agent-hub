@@ -4,12 +4,7 @@ import { useRef } from "react";
 import { useTerminal } from "@/hooks/useTerminal";
 import { useWorkspace } from "@/stores/workspace-store";
 import { getSocket } from "@/hooks/useSocket";
-
-const STATUS_COLORS: Record<string, string> = {
-  running: "bg-green-500",
-  stopped: "bg-zinc-500",
-  crashed: "bg-red-500",
-};
+import { RotateCw, X, Circle } from "lucide-react";
 
 export function TerminalPane({ sessionId }: { sessionId: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -18,26 +13,56 @@ export function TerminalPane({ sessionId }: { sessionId: string }) {
 
   if (!session) return null;
 
+  const statusColor = session.status === "running" ? "#22c55e" : session.status === "crashed" ? "#ef4444" : "#71717a";
+
   return (
-    <div className="flex flex-col h-full bg-(--hub-bg-surface) border border-(--hub-border) rounded-sm overflow-hidden">
+    <div
+      className="flex flex-col h-full rounded overflow-hidden"
+      style={{
+        background: "var(--hub-bg-surface)",
+        border: "1px solid var(--hub-border)",
+        boxShadow: "var(--hub-shadow)",
+      }}
+    >
       {/* Header */}
-      <div className="flex items-center justify-between h-6 px-2 bg-(--hub-bg-raised) border-b border-(--hub-border) shrink-0">
-        <div className="flex items-center gap-1.5">
-          <span className={`w-1.5 h-1.5 rounded-full ${STATUS_COLORS[session.status]}`} />
-          <span className="text-[11px] font-mono text-(--hub-accent)">@{session.name}</span>
-          <span className="text-[10px] text-(--hub-text-faint) truncate max-w-32">{session.command}</span>
+      <div
+        className="flex items-center justify-between h-8 px-3 shrink-0"
+        style={{
+          background: "var(--hub-bg-raised)",
+          borderBottom: "1px solid var(--hub-border)",
+          boxShadow: "var(--hub-inset-shadow)",
+        }}
+      >
+        <div className="flex items-center gap-2">
+          <Circle size={7} fill={statusColor} color={statusColor} />
+          <span className="text-[11px] font-medium" style={{ color: "var(--hub-accent)" }}>
+            @{session.name}
+          </span>
+          <span className="text-[10px]" style={{ color: "var(--hub-text-faint)" }}>
+            {session.command}
+          </span>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0.5">
           <button
             onClick={() => { getSocket().emit("session:restart", { sessionId }); }}
-            className="text-[10px] text-(--hub-text-muted) hover:text-(--hub-text) px-1"
+            className="p-1 rounded hub-transition"
+            style={{ color: "var(--hub-text-faint)" }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = "var(--hub-text)"; e.currentTarget.style.background = "var(--hub-border)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = "var(--hub-text-faint)"; e.currentTarget.style.background = "transparent"; }}
             title="Restart"
-          >↻</button>
+          >
+            <RotateCw size={11} />
+          </button>
           <button
             onClick={() => { getSocket().emit("session:destroy", { sessionId }); }}
-            className="text-[10px] text-(--hub-text-muted) hover:text-red-400 px-1"
+            className="p-1 rounded hub-transition"
+            style={{ color: "var(--hub-text-faint)" }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = "#ef4444"; e.currentTarget.style.background = "rgba(239,68,68,0.1)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = "var(--hub-text-faint)"; e.currentTarget.style.background = "transparent"; }}
             title="Close"
-          >×</button>
+          >
+            <X size={11} />
+          </button>
         </div>
       </div>
       {/* Terminal */}
