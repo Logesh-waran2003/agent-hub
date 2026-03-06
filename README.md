@@ -43,7 +43,7 @@ Create tasks, assign them to sessions, track status — separate from the agent-
 ## Getting Started
 
 ```bash
-git clone https://github.com/Logesh-waran2003/hub
+git clone https://github.com/Logesh-waran2003/agent-hub
 cd hub
 npm install
 npm run dev
